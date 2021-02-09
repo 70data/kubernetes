@@ -18,6 +18,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# Go tools really don't like it if you have a symlink in `pwd`.
+cd "$(pwd -P)"
+
 KUBE_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 source "${KUBE_ROOT}/hack/lib/init.sh"
 
@@ -366,3 +369,5 @@ cat <<__EOF__ > "vendor/OWNERS"
 approvers:
 - dep-approvers
 __EOF__
+
+kube::log::status "NOTE: don't forget to handle vendor/* files that were added or removed"

@@ -334,7 +334,7 @@ function kube::release::create_docker_images_for_server() {
     local images_dir
     binary_dir="$1"
     arch="$2"
-    binaries=$(kube::build::get_docker_wrapped_binaries "${arch}")
+    binaries=$(kube::build::get_docker_wrapped_binaries)
     images_dir="${RELEASE_IMAGES}/${arch}"
     mkdir -p "${images_dir}"
 
@@ -383,7 +383,17 @@ EOF
           echo "COPY nsswitch.conf /etc/" >> "${docker_file_path}"
         fi
 
-        "${DOCKER[@]}" build ${docker_build_opts:+"${docker_build_opts}"} -q -t "${docker_image_tag}" "${docker_build_path}" >/dev/null
+        local build_log="${docker_build_path}/build.log"
+        if ! DOCKER_CLI_EXPERIMENTAL=enabled "${DOCKER[@]}" buildx build \
+          --platform linux/"${arch}" \
+          --load ${docker_build_opts:+"${docker_build_opts}"} \
+          -t "${docker_image_tag}" \
+          "${docker_build_path}" >"${build_log}" 2>&1; then
+            cat "${build_log}"
+            exit 1
+        fi
+        rm "${build_log}"
+
         # If we are building an official/alpha/beta release we want to keep
         # docker images and tag them appropriately.
         local -r release_docker_image_tag="${KUBE_DOCKER_REGISTRY-$docker_registry}/${binary_name}-${arch}:${KUBE_DOCKER_IMAGE_TAG-$docker_tag}"

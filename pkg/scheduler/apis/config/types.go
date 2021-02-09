@@ -26,12 +26,6 @@ import (
 )
 
 const (
-	// SchedulerDefaultLockObjectNamespace defines default scheduler lock object namespace ("kube-system")
-	SchedulerDefaultLockObjectNamespace string = metav1.NamespaceSystem
-
-	// SchedulerDefaultLockObjectName defines default scheduler lock object name ("kube-scheduler")
-	SchedulerDefaultLockObjectName = "kube-scheduler"
-
 	// SchedulerPolicyConfigMapKey defines the key of the element in the
 	// scheduler's policy ConfigMap that contains scheduler's policy config.
 	SchedulerPolicyConfigMapKey = "policy.cfg"
@@ -55,6 +49,9 @@ const (
 type KubeSchedulerConfiguration struct {
 	metav1.TypeMeta
 
+	// Parallelism defines the amount of parallelism in algorithms for scheduling a Pods. Must be greater than 0. Defaults to 16
+	Parallelism int32
+
 	// AlgorithmSource specifies the scheduler algorithm source.
 	// TODO(#87526): Remove AlgorithmSource from this package
 	// DEPRECATED: AlgorithmSource is removed in the v1beta1 ComponentConfig
@@ -77,10 +74,7 @@ type KubeSchedulerConfiguration struct {
 	// TODO: We might wanna make this a substruct like Debugging componentbaseconfig.DebuggingConfiguration
 	componentbaseconfig.DebuggingConfiguration
 
-	// DisablePreemption disables the pod preemption feature.
-	DisablePreemption bool
-
-	// PercentageOfNodeToScore is the percentage of all nodes that once found feasible
+	// PercentageOfNodesToScore is the percentage of all nodes that once found feasible
 	// for running a pod, the scheduler stops its search for more feasible nodes in
 	// the cluster. This helps improve scheduler's performance. Scheduler always tries to find
 	// at least "minFeasibleNodesToFind" feasible nodes no matter what the value of this flag is.
@@ -192,7 +186,8 @@ type Plugins struct {
 	// Score is a list of plugins that should be invoked when ranking nodes that have passed the filtering phase.
 	Score *PluginSet
 
-	// Reserve is a list of plugins invoked when reserving a node to run the pod.
+	// Reserve is a list of plugins invoked when reserving/unreserving resources
+	// after a node is assigned to run the pod.
 	Reserve *PluginSet
 
 	// Permit is a list of plugins that control binding of a Pod. These plugins can prevent or delay binding of a Pod.
@@ -207,9 +202,6 @@ type Plugins struct {
 
 	// PostBind is a list of plugins that should be invoked after a pod is successfully bound.
 	PostBind *PluginSet
-
-	// Unreserve is a list of plugins invoked when a pod that was previously reserved is rejected in a later phase.
-	Unreserve *PluginSet
 }
 
 // PluginSet specifies enabled and disabled plugins for an extension point.
@@ -288,7 +280,6 @@ func (p *Plugins) Append(src *Plugins) {
 	p.PreBind = appendPluginSet(p.PreBind, src.PreBind)
 	p.Bind = appendPluginSet(p.Bind, src.Bind)
 	p.PostBind = appendPluginSet(p.PostBind, src.PostBind)
-	p.Unreserve = appendPluginSet(p.Unreserve, src.Unreserve)
 }
 
 // Apply merges the plugin configuration from custom plugins, handling disabled sets.
@@ -308,7 +299,6 @@ func (p *Plugins) Apply(customPlugins *Plugins) {
 	p.PreBind = mergePluginSets(p.PreBind, customPlugins.PreBind)
 	p.Bind = mergePluginSets(p.Bind, customPlugins.Bind)
 	p.PostBind = mergePluginSets(p.PostBind, customPlugins.PostBind)
-	p.Unreserve = mergePluginSets(p.Unreserve, customPlugins.Unreserve)
 }
 
 func mergePluginSets(defaultPluginSet, customPluginSet *PluginSet) *PluginSet {
@@ -416,7 +406,7 @@ type ExtenderTLSConfig struct {
 	CertData []byte
 	// KeyData holds PEM-encoded bytes (typically read from a client certificate key file).
 	// KeyData takes precedence over KeyFile
-	KeyData []byte
+	KeyData []byte `datapolicy:"security-key"`
 	// CAData holds PEM-encoded bytes (typically read from a root certificates bundle).
 	// CAData takes precedence over CAFile
 	CAData []byte

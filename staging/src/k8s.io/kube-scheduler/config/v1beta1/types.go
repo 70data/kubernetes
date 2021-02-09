@@ -44,6 +44,9 @@ const (
 type KubeSchedulerConfiguration struct {
 	metav1.TypeMeta `json:",inline"`
 
+	// Parallelism defines the amount of parallelism in algorithms for scheduling a Pods. Must be greater than 0. Defaults to 16
+	Parallelism *int32 `json:"parallelism,omitempty"`
+
 	// LeaderElection defines the configuration of leader election client.
 	LeaderElection componentbaseconfigv1alpha1.LeaderElectionConfiguration `json:"leaderElection"`
 
@@ -61,10 +64,7 @@ type KubeSchedulerConfiguration struct {
 	// TODO: We might wanna make this a substruct like Debugging componentbaseconfigv1alpha1.DebuggingConfiguration
 	componentbaseconfigv1alpha1.DebuggingConfiguration `json:",inline"`
 
-	// DisablePreemption disables the pod preemption feature.
-	DisablePreemption *bool `json:"disablePreemption,omitempty"`
-
-	// PercentageOfNodeToScore is the percentage of all nodes that once found feasible
+	// PercentageOfNodesToScore is the percentage of all nodes that once found feasible
 	// for running a pod, the scheduler stops its search for more feasible nodes in
 	// the cluster. This helps improve scheduler's performance. Scheduler always tries to find
 	// at least "minFeasibleNodesToFind" feasible nodes no matter what the value of this flag is.
@@ -175,7 +175,8 @@ type Plugins struct {
 	// Score is a list of plugins that should be invoked when ranking nodes that have passed the filtering phase.
 	Score *PluginSet `json:"score,omitempty"`
 
-	// Reserve is a list of plugins invoked when reserving a node to run the pod.
+	// Reserve is a list of plugins invoked when reserving/unreserving resources
+	// after a node is assigned to run the pod.
 	Reserve *PluginSet `json:"reserve,omitempty"`
 
 	// Permit is a list of plugins that control binding of a Pod. These plugins can prevent or delay binding of a Pod.
@@ -190,9 +191,6 @@ type Plugins struct {
 
 	// PostBind is a list of plugins that should be invoked after a pod is successfully bound.
 	PostBind *PluginSet `json:"postBind,omitempty"`
-
-	// Unreserve is a list of plugins invoked when a pod that was previously reserved is rejected in a later phase.
-	Unreserve *PluginSet `json:"unreserve,omitempty"`
 }
 
 // PluginSet specifies enabled and disabled plugins for an extension point.

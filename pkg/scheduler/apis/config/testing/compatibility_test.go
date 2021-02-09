@@ -75,7 +75,8 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeAffinity"},
 					{Name: "TaintToleration"},
 				},
-				"BindPlugin": {{Name: "DefaultBinder"}},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
+				"BindPlugin":       {{Name: "DefaultBinder"}},
 			},
 		},
 		// This is a special test for the case where a policy is specified without specifying any filters.
@@ -95,7 +96,8 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeUnschedulable"},
 					{Name: "TaintToleration"},
 				},
-				"BindPlugin": {{Name: "DefaultBinder"}},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
+				"BindPlugin":       {{Name: "DefaultBinder"}},
 			},
 		},
 		// Do not change this JSON after the corresponding release has been tagged.
@@ -136,11 +138,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeLabel"},
 					{Name: "ServiceAffinity"},
 				},
-				"PreScorePlugin": {{Name: "DefaultPodTopologySpread"}},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
+				"PreScorePlugin":   {{Name: "PodTopologySpread"}},
 				"ScorePlugin": {
 					{Name: "NodeResourcesLeastAllocated", Weight: 1},
 					{Name: "NodeLabel", Weight: 4},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "ServiceAffinity", Weight: 3},
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -191,12 +194,13 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeLabel"},
 					{Name: "ServiceAffinity"},
 				},
-				"PreScorePlugin": {{Name: "DefaultPodTopologySpread"}},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
+				"PreScorePlugin":   {{Name: "PodTopologySpread"}},
 				"ScorePlugin": {
 					{Name: "NodeResourcesBalancedAllocation", Weight: 2},
 					{Name: "NodeResourcesLeastAllocated", Weight: 2},
 					{Name: "NodeLabel", Weight: 8}, // Weight is 4 * number of LabelPreference priorities
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "ServiceAffinity", Weight: 6}, // Weight is the 3 * number of custom ServiceAntiAffinity priorities
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -254,14 +258,18 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "AzureDiskLimits"},
 					{Name: "VolumeZone"},
 				},
-				"PreScorePlugin": {{Name: "DefaultPodTopologySpread"}},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
+				"PreScorePlugin": {
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
+				},
 				"ScorePlugin": {
 					{Name: "NodeResourcesBalancedAllocation", Weight: 2},
 					{Name: "ImageLocality", Weight: 2},
 					{Name: "NodeResourcesLeastAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodeLabel", Weight: 4},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "ServiceAffinity", Weight: 3},
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -324,9 +332,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -335,7 +345,7 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "InterPodAffinity", Weight: 2},
 					{Name: "NodeResourcesLeastAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -400,9 +410,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -413,7 +425,7 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeResourcesMostAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -487,9 +499,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -500,7 +514,7 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeResourcesMostAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -585,9 +599,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -598,7 +614,7 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeResourcesMostAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
 				"BindPlugin": {{Name: "DefaultBinder"}},
@@ -686,9 +702,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -699,13 +717,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeResourcesMostAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
 			},
 			wantExtenders: []config.Extender{{
 				URLPrefix:        "/prefix",
@@ -793,9 +810,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -806,13 +825,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeResourcesMostAllocated", Weight: 2},
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
 			},
 			wantExtenders: []config.Extender{{
 				URLPrefix:        "/prefix",
@@ -912,9 +930,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -926,13 +946,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
 					{Name: "RequestedToCapacityRatio", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
 			},
 			wantExtenders: []config.Extender{{
 				URLPrefix:        "/prefix",
@@ -1034,9 +1053,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -1048,13 +1069,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
 					{Name: "RequestedToCapacityRatio", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
 			},
 			wantExtenders: []config.Extender{{
 				URLPrefix:        "/prefix",
@@ -1156,9 +1176,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -1170,13 +1192,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
 					{Name: "RequestedToCapacityRatio", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
 			},
 			wantExtenders: []config.Extender{{
 				URLPrefix:        "/prefix",
@@ -1282,9 +1303,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "VolumeZone"},
 					{Name: "InterPodAffinity"},
 				},
+				"PostFilterPlugin": {{Name: "DefaultPreemption"}},
 				"PreScorePlugin": {
 					{Name: "InterPodAffinity"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
 				},
 				"ScorePlugin": {
@@ -1296,13 +1319,12 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 					{Name: "NodeAffinity", Weight: 2},
 					{Name: "NodePreferAvoidPods", Weight: 2},
 					{Name: "RequestedToCapacityRatio", Weight: 2},
-					{Name: "DefaultPodTopologySpread", Weight: 2},
+					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 2},
 				},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
 			},
 			wantExtenders: []config.Extender{{
 				URLPrefix:        "/prefix",
@@ -1339,12 +1361,11 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 				},
 			}
 			informerFactory := informers.NewSharedInformerFactory(client, 0)
-			recorderFactory := profile.NewRecorderFactory(events.NewBroadcaster(&events.EventSinkImpl{Interface: client.EventsV1beta1().Events("")}))
+			recorderFactory := profile.NewRecorderFactory(events.NewBroadcaster(&events.EventSinkImpl{Interface: client.EventsV1()}))
 
 			sched, err := scheduler.New(
 				client,
 				informerFactory,
-				informerFactory.Core().V1().Pods(),
 				recorderFactory,
 				make(chan struct{}),
 				scheduler.WithAlgorithmSource(algorithmSrc),
@@ -1355,7 +1376,7 @@ func TestCompatibility_v1_Scheduler(t *testing.T) {
 			}
 
 			defProf := sched.Profiles["default-scheduler"]
-			gotPlugins := defProf.Framework.ListPlugins()
+			gotPlugins := defProf.ListPlugins()
 			if diff := cmp.Diff(tc.wantPlugins, gotPlugins); diff != "" {
 				t.Errorf("unexpected plugins diff (-want, +got): %s", diff)
 			}
@@ -1393,12 +1414,12 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 		},
 		"FilterPlugin": {
 			{Name: "NodeUnschedulable"},
-			{Name: "NodeResourcesFit"},
 			{Name: "NodeName"},
-			{Name: "NodePorts"},
-			{Name: "NodeAffinity"},
-			{Name: "VolumeRestrictions"},
 			{Name: "TaintToleration"},
+			{Name: "NodeAffinity"},
+			{Name: "NodePorts"},
+			{Name: "NodeResourcesFit"},
+			{Name: "VolumeRestrictions"},
 			{Name: "EBSLimits"},
 			{Name: "GCEPDLimits"},
 			{Name: "NodeVolumeLimits"},
@@ -1415,7 +1436,7 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 			{Name: "InterPodAffinity"},
 			{Name: "PodTopologySpread"},
 			{Name: "TaintToleration"},
-			{Name: "DefaultPodTopologySpread"},
+			{Name: "NodeAffinity"},
 		},
 		"ScorePlugin": {
 			{Name: "NodeResourcesBalancedAllocation", Weight: 1},
@@ -1426,12 +1447,10 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 			{Name: "NodePreferAvoidPods", Weight: 10000},
 			{Name: "PodTopologySpread", Weight: 2},
 			{Name: "TaintToleration", Weight: 1},
-			{Name: "DefaultPodTopologySpread", Weight: 1},
 		},
-		"BindPlugin":      {{Name: "DefaultBinder"}},
-		"ReservePlugin":   {{Name: "VolumeBinding"}},
-		"UnreservePlugin": {{Name: "VolumeBinding"}},
-		"PreBindPlugin":   {{Name: "VolumeBinding"}},
+		"BindPlugin":    {{Name: "DefaultBinder"}},
+		"ReservePlugin": {{Name: "VolumeBinding"}},
+		"PreBindPlugin": {{Name: "VolumeBinding"}},
 	}
 
 	testcases := []struct {
@@ -1464,12 +1483,12 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 				},
 				"FilterPlugin": {
 					{Name: "NodeUnschedulable"},
-					{Name: "NodeResourcesFit"},
 					{Name: "NodeName"},
-					{Name: "NodePorts"},
-					{Name: "NodeAffinity"},
-					{Name: "VolumeRestrictions"},
 					{Name: "TaintToleration"},
+					{Name: "NodeAffinity"},
+					{Name: "NodePorts"},
+					{Name: "NodeResourcesFit"},
+					{Name: "VolumeRestrictions"},
 					{Name: "EBSLimits"},
 					{Name: "GCEPDLimits"},
 					{Name: "NodeVolumeLimits"},
@@ -1486,7 +1505,7 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 					{Name: "InterPodAffinity"},
 					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "NodeAffinity"},
 				},
 				"ScorePlugin": {
 					{Name: "NodeResourcesBalancedAllocation", Weight: 1},
@@ -1497,12 +1516,10 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 					{Name: "NodePreferAvoidPods", Weight: 10000},
 					{Name: "PodTopologySpread", Weight: 2},
 					{Name: "TaintToleration", Weight: 1},
-					{Name: "DefaultPodTopologySpread", Weight: 1},
 				},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
 			},
 		},
 	}
@@ -1517,12 +1534,11 @@ func TestAlgorithmProviderCompatibility(t *testing.T) {
 
 			client := fake.NewSimpleClientset()
 			informerFactory := informers.NewSharedInformerFactory(client, 0)
-			recorderFactory := profile.NewRecorderFactory(events.NewBroadcaster(&events.EventSinkImpl{Interface: client.EventsV1beta1().Events("")}))
+			recorderFactory := profile.NewRecorderFactory(events.NewBroadcaster(&events.EventSinkImpl{Interface: client.EventsV1()}))
 
 			sched, err := scheduler.New(
 				client,
 				informerFactory,
-				informerFactory.Core().V1().Pods(),
 				recorderFactory,
 				make(chan struct{}),
 				opts...,
@@ -1555,12 +1571,12 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 		},
 		"FilterPlugin": {
 			{Name: "NodeUnschedulable"},
-			{Name: "NodeResourcesFit"},
 			{Name: "NodeName"},
-			{Name: "NodePorts"},
-			{Name: "NodeAffinity"},
-			{Name: "VolumeRestrictions"},
 			{Name: "TaintToleration"},
+			{Name: "NodeAffinity"},
+			{Name: "NodePorts"},
+			{Name: "NodeResourcesFit"},
+			{Name: "VolumeRestrictions"},
 			{Name: "EBSLimits"},
 			{Name: "GCEPDLimits"},
 			{Name: "NodeVolumeLimits"},
@@ -1577,7 +1593,7 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 			{Name: "InterPodAffinity"},
 			{Name: "PodTopologySpread"},
 			{Name: "TaintToleration"},
-			{Name: "DefaultPodTopologySpread"},
+			{Name: "NodeAffinity"},
 		},
 		"ScorePlugin": {
 			{Name: "NodeResourcesBalancedAllocation", Weight: 1},
@@ -1588,12 +1604,52 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 			{Name: "NodePreferAvoidPods", Weight: 10000},
 			{Name: "PodTopologySpread", Weight: 2},
 			{Name: "TaintToleration", Weight: 1},
-			{Name: "DefaultPodTopologySpread", Weight: 1},
 		},
-		"ReservePlugin":   {{Name: "VolumeBinding"}},
-		"UnreservePlugin": {{Name: "VolumeBinding"}},
-		"PreBindPlugin":   {{Name: "VolumeBinding"}},
-		"BindPlugin":      {{Name: "DefaultBinder"}},
+		"ReservePlugin": {{Name: "VolumeBinding"}},
+		"PreBindPlugin": {{Name: "VolumeBinding"}},
+		"BindPlugin":    {{Name: "DefaultBinder"}},
+	}
+	defaultPluginConfigs := []config.PluginConfig{
+		{
+			Name: "DefaultPreemption",
+			Args: &config.DefaultPreemptionArgs{
+				MinCandidateNodesPercentage: 10,
+				MinCandidateNodesAbsolute:   100,
+			},
+		},
+		{
+			Name: "InterPodAffinity",
+			Args: &config.InterPodAffinityArgs{
+				HardPodAffinityWeight: 1,
+			},
+		},
+		{
+			Name: "NodeAffinity",
+			Args: &config.NodeAffinityArgs{},
+		},
+		{
+			Name: "NodeResourcesFit",
+			Args: &config.NodeResourcesFitArgs{},
+		},
+		{
+			Name: "NodeResourcesLeastAllocated",
+			Args: &config.NodeResourcesLeastAllocatedArgs{
+				Resources: []config.ResourceSpec{
+					{Name: "cpu", Weight: 1},
+					{Name: "memory", Weight: 1},
+				},
+			},
+		},
+		{
+			Name: "PodTopologySpread",
+			Args: &config.PodTopologySpreadArgs{DefaultingType: config.SystemDefaulting},
+		},
+		{
+			Name: "VolumeBinding",
+			Args: &config.VolumeBindingArgs{
+				BindTimeoutSeconds: 600,
+			},
+		},
 	}
 
 	testcases := []struct {
@@ -1606,11 +1662,77 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 		{
 			name:             "default plugins",
 			wantPlugins:      defaultPlugins,
-			wantPluginConfig: nil,
+			wantPluginConfig: defaultPluginConfigs,
 		},
 		{
-			name:        "default plugins with customized plugin config",
-			wantPlugins: defaultPlugins,
+			name: "in-tree plugins with customized plugin config",
+			plugins: config.Plugins{
+				Filter: &config.PluginSet{
+					Enabled: []config.Plugin{
+						{Name: "NodeLabel"},
+						{Name: "ServiceAffinity"},
+					},
+				},
+				Score: &config.PluginSet{
+					Enabled: []config.Plugin{
+						{Name: "RequestedToCapacityRatio"},
+					},
+				},
+			},
+			wantPlugins: map[string][]config.Plugin{
+				"QueueSortPlugin": {
+					{Name: "PrioritySort"},
+				},
+				"PreFilterPlugin": {
+					{Name: "NodeResourcesFit"},
+					{Name: "NodePorts"},
+					{Name: "PodTopologySpread"},
+					{Name: "InterPodAffinity"},
+					{Name: "VolumeBinding"},
+				},
+				"FilterPlugin": {
+					{Name: "NodeUnschedulable"},
+					{Name: "NodeName"},
+					{Name: "TaintToleration"},
+					{Name: "NodeAffinity"},
+					{Name: "NodePorts"},
+					{Name: "NodeResourcesFit"},
+					{Name: "VolumeRestrictions"},
+					{Name: "EBSLimits"},
+					{Name: "GCEPDLimits"},
+					{Name: "NodeVolumeLimits"},
+					{Name: "AzureDiskLimits"},
+					{Name: "VolumeBinding"},
+					{Name: "VolumeZone"},
+					{Name: "PodTopologySpread"},
+					{Name: "InterPodAffinity"},
+					{Name: "NodeLabel"},
+					{Name: "ServiceAffinity"},
+				},
+				"PostFilterPlugin": {
+					{Name: "DefaultPreemption"},
+				},
+				"PreScorePlugin": {
+					{Name: "InterPodAffinity"},
+					{Name: "PodTopologySpread"},
+					{Name: "TaintToleration"},
+					{Name: "NodeAffinity"},
+				},
+				"ScorePlugin": {
+					{Name: "NodeResourcesBalancedAllocation", Weight: 1},
+					{Name: "ImageLocality", Weight: 1},
+					{Name: "InterPodAffinity", Weight: 1},
+					{Name: "NodeResourcesLeastAllocated", Weight: 1},
+					{Name: "NodeAffinity", Weight: 1},
+					{Name: "NodePreferAvoidPods", Weight: 10000},
+					{Name: "PodTopologySpread", Weight: 2},
+					{Name: "TaintToleration", Weight: 1},
+					{Name: "RequestedToCapacityRatio", Weight: 1},
+				},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
+			},
 			pluginConfig: []config.PluginConfig{
 				{
 					Name: "NodeResourcesFit",
@@ -1633,6 +1755,7 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 								WhenUnsatisfiable: v1.ScheduleAnyway,
 							},
 						},
+						DefaultingType: config.ListDefaulting,
 					},
 				},
 				{
@@ -1677,9 +1800,44 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 			},
 			wantPluginConfig: []config.PluginConfig{
 				{
+					Name: "DefaultPreemption",
+					Args: &config.DefaultPreemptionArgs{
+						MinCandidateNodesPercentage: 10,
+						MinCandidateNodesAbsolute:   100,
+					},
+				},
+				{
+					Name: "InterPodAffinity",
+					Args: &config.InterPodAffinityArgs{
+						HardPodAffinityWeight: 100,
+					},
+				},
+				{
+					Name: "NodeAffinity",
+					Args: &config.NodeAffinityArgs{},
+				},
+				{
+					Name: "NodeLabel",
+					Args: &config.NodeLabelArgs{
+						PresentLabels:           []string{"foo", "bar"},
+						AbsentLabels:            []string{"apple"},
+						PresentLabelsPreference: []string{"dog"},
+						AbsentLabelsPreference:  []string{"cat"},
+					},
+				},
+				{
 					Name: "NodeResourcesFit",
 					Args: &config.NodeResourcesFitArgs{
 						IgnoredResources: []string{"foo", "bar"},
+					},
+				},
+				{
+					Name: "NodeResourcesLeastAllocated",
+					Args: &config.NodeResourcesLeastAllocatedArgs{
+						Resources: []config.ResourceSpec{
+							{Name: "cpu", Weight: 1},
+							{Name: "memory", Weight: 1},
+						},
 					},
 				},
 				{
@@ -1697,6 +1855,7 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 								WhenUnsatisfiable: v1.ScheduleAnyway,
 							},
 						},
+						DefaultingType: config.ListDefaulting,
 					},
 				},
 				{
@@ -1708,21 +1867,6 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 						Resources: []config.ResourceSpec{
 							{Name: "cpu", Weight: 10},
 						},
-					},
-				},
-				{
-					Name: "InterPodAffinity",
-					Args: &config.InterPodAffinityArgs{
-						HardPodAffinityWeight: 100,
-					},
-				},
-				{
-					Name: "NodeLabel",
-					Args: &config.NodeLabelArgs{
-						PresentLabels:           []string{"foo", "bar"},
-						AbsentLabels:            []string{"apple"},
-						PresentLabelsPreference: []string{"dog"},
-						AbsentLabelsPreference:  []string{"cat"},
 					},
 				},
 				{
@@ -1779,7 +1923,8 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 				PreScore: &config.PluginSet{
 					Disabled: []config.Plugin{
 						{Name: "InterPodAffinity"},
-						{Name: "DefaultPodTopologySpread"},
+						{Name: "NodeAffinity"},
+						{Name: "SelectorSpread"},
 						{Name: "TaintToleration"},
 						{Name: "PodTopologySpread"},
 					},
@@ -1792,7 +1937,7 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 						{Name: "NodeResourcesLeastAllocated"},
 						{Name: "NodeAffinity"},
 						{Name: "NodePreferAvoidPods"},
-						{Name: "DefaultPodTopologySpread"},
+						{Name: "SelectorSpread"},
 						{Name: "TaintToleration"},
 						{Name: "PodTopologySpread"},
 					},
@@ -1808,11 +1953,6 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 					},
 				},
 				Reserve: &config.PluginSet{
-					Disabled: []config.Plugin{
-						{Name: "VolumeBinding"},
-					},
-				},
-				Unreserve: &config.PluginSet{
 					Disabled: []config.Plugin{
 						{Name: "VolumeBinding"},
 					},
@@ -1869,8 +2009,9 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 				},
 				PreScore: &config.PluginSet{
 					Enabled: []config.Plugin{
+						{Name: "PodTopologySpread"},
 						{Name: "TaintToleration"},
-						{Name: "DefaultPodTopologySpread"},
+						{Name: "SelectorSpread"},
 						{Name: "InterPodAffinity"},
 					},
 					Disabled: []config.Plugin{
@@ -1879,8 +2020,9 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 				},
 				Score: &config.PluginSet{
 					Enabled: []config.Plugin{
+						{Name: "PodTopologySpread", Weight: 24},
 						{Name: "TaintToleration", Weight: 24},
-						{Name: "DefaultPodTopologySpread", Weight: 24},
+						{Name: "SelectorSpread", Weight: 24},
 						{Name: "NodePreferAvoidPods", Weight: 24},
 						{Name: "NodeAffinity", Weight: 24},
 						{Name: "NodeResourcesLeastAllocated", Weight: 24},
@@ -1926,13 +2068,15 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 					{Name: "DefaultPreemption"},
 				},
 				"PreScorePlugin": {
+					{Name: "PodTopologySpread"},
 					{Name: "TaintToleration"},
-					{Name: "DefaultPodTopologySpread"},
+					{Name: "SelectorSpread"},
 					{Name: "InterPodAffinity"},
 				},
 				"ScorePlugin": {
+					{Name: "PodTopologySpread", Weight: 24},
 					{Name: "TaintToleration", Weight: 24},
-					{Name: "DefaultPodTopologySpread", Weight: 24},
+					{Name: "SelectorSpread", Weight: 24},
 					{Name: "NodePreferAvoidPods", Weight: 24},
 					{Name: "NodeAffinity", Weight: 24},
 					{Name: "NodeResourcesLeastAllocated", Weight: 24},
@@ -1940,12 +2084,11 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 					{Name: "ImageLocality", Weight: 24},
 					{Name: "NodeResourcesBalancedAllocation", Weight: 24},
 				},
-				"ReservePlugin":   {{Name: "VolumeBinding"}},
-				"UnreservePlugin": {{Name: "VolumeBinding"}},
-				"PreBindPlugin":   {{Name: "VolumeBinding"}},
-				"BindPlugin":      {{Name: "DefaultBinder"}},
+				"ReservePlugin": {{Name: "VolumeBinding"}},
+				"PreBindPlugin": {{Name: "VolumeBinding"}},
+				"BindPlugin":    {{Name: "DefaultBinder"}},
 			},
-			wantPluginConfig: nil,
+			wantPluginConfig: defaultPluginConfigs,
 		},
 	}
 	for _, tc := range testcases {
@@ -1953,12 +2096,11 @@ func TestPluginsConfigurationCompatibility(t *testing.T) {
 
 			client := fake.NewSimpleClientset()
 			informerFactory := informers.NewSharedInformerFactory(client, 0)
-			recorderFactory := profile.NewRecorderFactory(events.NewBroadcaster(&events.EventSinkImpl{Interface: client.EventsV1beta1().Events("")}))
+			recorderFactory := profile.NewRecorderFactory(events.NewBroadcaster(&events.EventSinkImpl{Interface: client.EventsV1()}))
 
 			sched, err := scheduler.New(
 				client,
 				informerFactory,
-				informerFactory.Core().V1().Pods(),
 				recorderFactory,
 				make(chan struct{}),
 				scheduler.WithProfiles(config.KubeSchedulerProfile{
